@@ -141,6 +141,11 @@ func (c *Client) GetDeviceDataOneDayPaging() (map[string]string, error) {
 		delete(parsed, "Grid line voltage ST")
 		delete(parsed, "Grid line voltage TR")
 	}
+	// Remove noisy diagnostic fields that are rarely useful
+	for _, key := range []string{"Waiting time", "ISO", "DCI", "GFCI", "Inverter status",
+		"Output Q", "Instrument power", "cumulative time", "Energy today", "energy_total", "Output Power"} {
+		delete(parsed, key)
+	}
 
 	return parsed, nil
 }

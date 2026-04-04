@@ -183,16 +183,14 @@ Once the bridge is running, you can explore the interactive API references via S
 Just enable the MQTT integration in Home Assistant. All sensors will appear automatically.
 
 ### Exposed Sensors
-The bridge pulls data from both the dashboard and detailed query endpoints to expose:
-- **Global Status**: Online Status, Current Power, Power Efficiency, CF Value
-- **Energy Metrics**: Energy Today, Energy Total, Instrument Power
+The bridge publishes only clean, meaningful sensors by default:
+- **Status**: Online / Offline
+- **Power**: Current Power (kW), Power Efficiency (%)
+- **Energy**: Energy Today (kWh), Energy Total (kWh)
+- **AC Metrics**: Output S — Apparent Power (VA), Output PF (Power Factor), Grid Frequency (Hz), Bus Voltage (V)
+- **PV Strings**: PV1 Voltage (V), PV1 Current (A) — PV2/PV3 added via `MPPT_COUNT`
+- **Grid**: Grid R Voltage (V), Grid R Current (A) — Grid S/T added via `PHASE_COUNT`
 - **Performance**: CUF (%), PR (%)
-- **Voltages & Currents**:
-  - PV1, PV2, PV3 Voltage and Current
-  - Grid R, S, T Voltage and Current
-  - Grid Line Voltages (RS, ST, TR)
-- **AC Metrics**: Output Power, Output S (VA), Output Q (VAr), Output PF, Grid Frequency, Bus Voltage
-- **Inverter Diagnostics**: Waiting Time, ISO, DCI, GFCI
 
 ## Project Status
 

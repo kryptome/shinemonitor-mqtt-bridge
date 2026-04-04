@@ -73,27 +73,22 @@ func (m *Client) PublishDiscovery() {
 		{"id": "energy_today", "name": "Energy Today", "class": "energy", "stateClass": "total_increasing", "unit": "kWh", "val": "{{ value_json.summary.Today }}"},
 		{"id": "energy_total", "name": "Energy Total", "class": "energy", "stateClass": "total_increasing", "unit": "kWh", "val": "{{ value_json.summary.Total }}"},
 		{"id": "efficiency", "name": "Power Efficiency", "class": "", "stateClass": "measurement", "unit": "%", "val": "{{ value_json.dashboard.powerEfficiency }}"},
-		{"id": "cf_value", "name": "CF Value", "class": "", "stateClass": "measurement", "unit": "", "val": "{{ value_json.dashboard.cfValue }}"},
-		
-		// Always keep Output S
+
+		// AC power metrics
 		{"id": "dev_output_s", "name": "Output S (Apparent Power)", "class": "apparent_power", "stateClass": "measurement", "unit": "VA", "val": "{{ value_json.device_data['Output S'] }}"},
-		{"id": "dev_output_q", "name": "Output Q", "class": "reactive_power", "stateClass": "measurement", "unit": "VA", "val": "{{ value_json.device_data['Output Q'] }}"},
 		{"id": "dev_output_pf", "name": "Output PF", "class": "power_factor", "stateClass": "measurement", "unit": "", "val": "{{ value_json.device_data['Output PF'] }}"},
-		{"id": "dev_instrument_power", "name": "Instrument Power", "class": "power", "stateClass": "measurement", "unit": "W", "val": "{{ value_json.device_data['Instrument power'] }}"},
-		{"id": "dev_cumulative_time", "name": "Cumulative Time", "class": "duration", "stateClass": "total_increasing", "unit": "h", "val": "{{ value_json.device_data['cumulative time'] }}"},
-		{"id": "dev_waiting_time", "name": "Waiting Time", "class": "duration", "stateClass": "measurement", "unit": "s", "val": "{{ value_json.device_data['Waiting time'] }}"},
-		
+
+		// PV1 (always shown)
 		{"id": "dev_pv1_voltage", "name": "PV1 Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['PV1 voltage'] }}"},
 		{"id": "dev_pv1_current", "name": "PV1 Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['PV1 current'] }}"},
-		
+
+		// Grid R (always shown)
 		{"id": "dev_grid_r_voltage", "name": "Grid R Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid R voltage'] }}"},
 		{"id": "dev_grid_r_current", "name": "Grid R Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['Grid R current'] }}"},
-		
+
+		// Grid & performance
 		{"id": "dev_grid_freq", "name": "Grid Frequency", "class": "frequency", "stateClass": "measurement", "unit": "Hz", "val": "{{ value_json.device_data['Grid frequency'] }}"},
 		{"id": "dev_bus_voltage", "name": "Bus Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['bus voltage'] }}"},
-		{"id": "dev_iso", "name": "ISO", "class": "", "stateClass": "measurement", "unit": "", "val": "{{ value_json.device_data['ISO'] }}"},
-		{"id": "dev_dci", "name": "DCI", "class": "", "stateClass": "measurement", "unit": "", "val": "{{ value_json.device_data['DCI'] }}"},
-		{"id": "dev_gfci", "name": "GFCI", "class": "", "stateClass": "measurement", "unit": "", "val": "{{ value_json.device_data['GFCI'] }}"},
 		{"id": "dev_cuf", "name": "CUF", "class": "", "stateClass": "measurement", "unit": "%", "val": "{{ value_json.device_data['CUF'] }}"},
 		{"id": "dev_pr", "name": "PR", "class": "", "stateClass": "measurement", "unit": "%", "val": "{{ value_json.device_data['PR'] }}"},
 	}
