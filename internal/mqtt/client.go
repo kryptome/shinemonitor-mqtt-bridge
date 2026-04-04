@@ -57,10 +57,13 @@ type HADiscoveryPayload struct {
 	ValueTemplate     string `json:"value_template"`
 	UniqueID          string `json:"unique_id"`
 	Device            struct {
-		Identifiers  []string `json:"identifiers"`
-		Name         string   `json:"name"`
-		Manufacturer string   `json:"manufacturer"`
-		Model        string   `json:"model"`
+		Identifiers      []string `json:"identifiers"`
+		Name             string   `json:"name"`
+		Manufacturer     string   `json:"manufacturer"`
+		Model            string   `json:"model"`
+		SerialNumber     string   `json:"serial_number,omitempty"`
+		SWVersion        string   `json:"sw_version,omitempty"`
+		ConfigurationURL string   `json:"configuration_url,omitempty"`
 	} `json:"device"`
 }
 
@@ -132,9 +135,12 @@ func (m *Client) PublishDiscovery() {
 			UniqueID:          fmt.Sprintf("solar_%s_%s", m.cfg.SN, s["id"]),
 		}
 		payload.Device.Identifiers = []string{m.cfg.SN}
-		payload.Device.Name = "Solar Inverter"
-		payload.Device.Manufacturer = "ShineMonitor"
-		payload.Device.Model = "Inverter"
+		payload.Device.Name = "ShineMonitor Solar Inverter"
+		payload.Device.Manufacturer = "Ksolare / ShineMonitor"
+		payload.Device.Model = "Solar Inverter"
+		payload.Device.SerialNumber = m.cfg.SN
+		payload.Device.SWVersion = "1.0.0"
+		payload.Device.ConfigurationURL = "http://localhost:8080/swagger/index.html"
 
 		payloadBytes, _ := json.Marshal(payload)
 		token := m.client.Publish(configTopic, 1, false, string(payloadBytes))

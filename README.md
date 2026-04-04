@@ -180,10 +180,12 @@ Once the bridge is running, you can explore the interactive API references via S
 
 ## Home Assistant Integration
 
-Just enable the MQTT integration in Home Assistant. All sensors will appear automatically.
+Just enable the MQTT integration in Home Assistant. All sensors will appear automatically as a proper device called **ShineMonitor Solar Inverter** — with the serial number, manufacturer, model, and a link to the REST API.
+
+You'll find it under **Settings → Devices & Services → MQTT → ShineMonitor Solar Inverter**.
 
 ### Exposed Sensors
-All entities use the clean `solar_` prefix. The device appears as **Solar Inverter** in Home Assistant.
+All entities use the clean `solar_` prefix. The device appears as **ShineMonitor Solar Inverter** in Home Assistant.
 
 | Entity ID | Friendly Name | Unit |
 |---|---|---|
