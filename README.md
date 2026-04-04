@@ -65,6 +65,14 @@ All configuration is done through the `.env` file.
 - `POLL_INTERVAL` – how often to fetch data (e.g. `30s`, `1m`, `5m`)
 - `LOG_LEVEL` – logging level (`debug`, `info`, `warn`, `error`)
 
+### Advanced Configuration
+By default, the bridge exposes sensors for a single MPPT and single phase (PV1 + Grid R). This keeps your Home Assistant integration clean and noise-free. 
+If your inverter uses multiple MPPTs or is a 3-Phase inverter, you can individually enable the extra sensors by adding these *optional* keys to your `.env`:
+- `SHINEMONITOR_MPPT_COUNT` – set to `2` or `3` to enable PV2 and PV3 sensors. Defaults to `1`.
+- `SHINEMONITOR_PHASE_COUNT` – set to `3` to automatically enable Grid S, Grid T, and Line Voltages (RS, ST, TR). Defaults to `1`.
+
+Single-phase / single-MPPT users can completely skip adding these keys.
+
 ## API Endpoints
 
 The bridge exposes a lightweight REST API for querying real-time and historical data cleanly without hitting ShineMonitor directly for every query.
@@ -82,7 +90,19 @@ Once the bridge is running, you can explore the interactive API references via S
 
 ## Home Assistant Integration
 
-Just enable the MQTT integration in Home Assistant. All sensors (PV power, battery SOC, grid export, etc.) will appear automatically.
+Just enable the MQTT integration in Home Assistant. All sensors will appear automatically.
+
+### Exposed Sensors
+The bridge pulls data from both the dashboard and detailed query endpoints to expose:
+- **Global Status**: Online Status, Current Power, Power Efficiency, CF Value
+- **Energy Metrics**: Energy Today, Energy Total, Instrument Power
+- **Performance**: CUF (%), PR (%)
+- **Voltages & Currents**:
+  - PV1, PV2, PV3 Voltage and Current
+  - Grid R, S, T Voltage and Current
+  - Grid Line Voltages (RS, ST, TR)
+- **AC Metrics**: Output Power, Output S (VA), Output Q (VAr), Output PF, Grid Frequency, Bus Voltage
+- **Inverter Diagnostics**: Inverter Status, Waiting Time, ISO, DCI, GFCI
 
 ## Project Status
 

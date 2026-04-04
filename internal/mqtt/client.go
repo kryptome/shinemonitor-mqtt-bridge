@@ -74,32 +74,21 @@ func (m *Client) PublishDiscovery() {
 		{"id": "energy_total", "name": "Energy Total", "class": "energy", "stateClass": "total_increasing", "unit": "kWh", "val": "{{ value_json.summary.Total }}"},
 		{"id": "efficiency", "name": "Power Efficiency", "class": "", "stateClass": "measurement", "unit": "%", "val": "{{ value_json.dashboard.powerEfficiency }}"},
 		{"id": "cf_value", "name": "CF Value", "class": "", "stateClass": "measurement", "unit": "", "val": "{{ value_json.dashboard.cfValue }}"},
-		// New DeviceData sensors
-		{"id": "dev_output_power", "name": "Output Power Raw", "class": "power", "stateClass": "measurement", "unit": "W", "val": "{{ value_json.device_data['Output Power'] }}"},
-		{"id": "dev_output_s", "name": "Output S", "class": "apparent_power", "stateClass": "measurement", "unit": "VA", "val": "{{ value_json.device_data['Output S'] }}"},
+		
+		// Always keep Output S
+		{"id": "dev_output_s", "name": "Output S (Apparent Power)", "class": "apparent_power", "stateClass": "measurement", "unit": "VA", "val": "{{ value_json.device_data['Output S'] }}"},
 		{"id": "dev_output_q", "name": "Output Q", "class": "reactive_power", "stateClass": "measurement", "unit": "VA", "val": "{{ value_json.device_data['Output Q'] }}"},
 		{"id": "dev_output_pf", "name": "Output PF", "class": "power_factor", "stateClass": "measurement", "unit": "", "val": "{{ value_json.device_data['Output PF'] }}"},
 		{"id": "dev_instrument_power", "name": "Instrument Power", "class": "power", "stateClass": "measurement", "unit": "W", "val": "{{ value_json.device_data['Instrument power'] }}"},
-		{"id": "dev_energy_today", "name": "Energy Today Raw", "class": "energy", "stateClass": "total_increasing", "unit": "kWh", "val": "{{ value_json.device_data['Energy today'] }}"},
-		{"id": "dev_energy_total", "name": "Energy Total Raw", "class": "energy", "stateClass": "total_increasing", "unit": "kWh", "val": "{{ value_json.device_data['energy_total'] }}"},
 		{"id": "dev_cumulative_time", "name": "Cumulative Time", "class": "duration", "stateClass": "total_increasing", "unit": "h", "val": "{{ value_json.device_data['cumulative time'] }}"},
-		{"id": "dev_inverter_status", "name": "Inverter Status Raw", "class": "", "stateClass": "", "unit": "", "val": "{{ value_json.device_data['Inverter status'] }}"},
 		{"id": "dev_waiting_time", "name": "Waiting Time", "class": "duration", "stateClass": "measurement", "unit": "s", "val": "{{ value_json.device_data['Waiting time'] }}"},
+		
 		{"id": "dev_pv1_voltage", "name": "PV1 Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['PV1 voltage'] }}"},
 		{"id": "dev_pv1_current", "name": "PV1 Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['PV1 current'] }}"},
-		{"id": "dev_pv2_voltage", "name": "PV2 Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['PV2 voltage'] }}"},
-		{"id": "dev_pv2_current", "name": "PV2 Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['PV2 current'] }}"},
-		{"id": "dev_pv3_voltage", "name": "PV3 Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['PV3 voltage'] }}"},
-		{"id": "dev_pv3_current", "name": "PV3 Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['PV3 current'] }}"},
+		
 		{"id": "dev_grid_r_voltage", "name": "Grid R Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid R voltage'] }}"},
 		{"id": "dev_grid_r_current", "name": "Grid R Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['Grid R current'] }}"},
-		{"id": "dev_grid_s_voltage", "name": "Grid S Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid S voltage'] }}"},
-		{"id": "dev_grid_s_current", "name": "Grid S Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['Grid S current'] }}"},
-		{"id": "dev_grid_t_voltage", "name": "Grid T Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid T voltage'] }}"},
-		{"id": "dev_grid_t_current", "name": "Grid T Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['Grid T current'] }}"},
-		{"id": "dev_grid_rs_voltage", "name": "Grid Line Voltage RS", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid line voltage RS'] }}"},
-		{"id": "dev_grid_st_voltage", "name": "Grid Line Voltage ST", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid line voltage ST'] }}"},
-		{"id": "dev_grid_tr_voltage", "name": "Grid Line Voltage TR", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid line voltage TR'] }}"},
+		
 		{"id": "dev_grid_freq", "name": "Grid Frequency", "class": "frequency", "stateClass": "measurement", "unit": "Hz", "val": "{{ value_json.device_data['Grid frequency'] }}"},
 		{"id": "dev_bus_voltage", "name": "Bus Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['bus voltage'] }}"},
 		{"id": "dev_iso", "name": "ISO", "class": "", "stateClass": "measurement", "unit": "", "val": "{{ value_json.device_data['ISO'] }}"},
@@ -109,13 +98,39 @@ func (m *Client) PublishDiscovery() {
 		{"id": "dev_pr", "name": "PR", "class": "", "stateClass": "measurement", "unit": "%", "val": "{{ value_json.device_data['PR'] }}"},
 	}
 
+	if m.cfg.MPPTCount >= 2 {
+		sensors = append(sensors, 
+			map[string]string{"id": "dev_pv2_voltage", "name": "PV2 Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['PV2 voltage'] }}"},
+			map[string]string{"id": "dev_pv2_current", "name": "PV2 Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['PV2 current'] }}"},
+		)
+	}
+
+	if m.cfg.MPPTCount >= 3 {
+		sensors = append(sensors, 
+			map[string]string{"id": "dev_pv3_voltage", "name": "PV3 Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['PV3 voltage'] }}"},
+			map[string]string{"id": "dev_pv3_current", "name": "PV3 Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['PV3 current'] }}"},
+		)
+	}
+
+	if m.cfg.PhaseCount >= 3 {
+		sensors = append(sensors, 
+			map[string]string{"id": "dev_grid_s_voltage", "name": "Grid S Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid S voltage'] }}"},
+			map[string]string{"id": "dev_grid_s_current", "name": "Grid S Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['Grid S current'] }}"},
+			map[string]string{"id": "dev_grid_t_voltage", "name": "Grid T Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid T voltage'] }}"},
+			map[string]string{"id": "dev_grid_t_current", "name": "Grid T Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['Grid T current'] }}"},
+			map[string]string{"id": "dev_grid_rs_voltage", "name": "Grid Line Voltage RS", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid line voltage RS'] }}"},
+			map[string]string{"id": "dev_grid_st_voltage", "name": "Grid Line Voltage ST", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid line voltage ST'] }}"},
+			map[string]string{"id": "dev_grid_tr_voltage", "name": "Grid Line Voltage TR", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid line voltage TR'] }}"},
+		)
+	}
+
 	for _, s := range sensors {
 		configTopic := fmt.Sprintf("homeassistant/sensor/shinemonitor_%s/%s/config", m.cfg.PN, s["id"])
 
 		payload := HADiscoveryPayload{
 			DeviceClass:       s["class"],
 			StateClass:        s["stateClass"],
-			Name:              fmt.Sprintf("ShineMonitor %s", s["name"]),
+			Name:              s["name"],
 			StateTopic:        stateTopic,
 			UnitOfMeasurement: s["unit"],
 			ValueTemplate:     s["val"],

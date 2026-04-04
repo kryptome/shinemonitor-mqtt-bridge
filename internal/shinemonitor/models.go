@@ -8,10 +8,11 @@ type StatusResponse struct {
 }
 
 type EnergyNowResponse struct {
-	TimeStamp time.Time `json:"TimeStamp"`
-	Energy    string    `json:"Energy"`
-	Unit      string    `json:"Unit"`
-	Error     string    `json:"Error,omitempty"`
+	TimeStamp  time.Time         `json:"TimeStamp"`
+	Energy     string            `json:"Energy"`
+	Unit       string            `json:"Unit"`
+	Error      string            `json:"Error,omitempty"`
+	DeviceData map[string]string `json:"device_data,omitempty"`
 }
 
 type EnergySummaryResponse struct {

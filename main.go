@@ -76,9 +76,10 @@ func doPoll(cfg *config.Config, sm *shinemonitor.Client, mq *mqtt.Client) {
 		cache.Set("status", &shinemonitor.StatusResponse{Status: statusStr}, ttl)
 
 		cache.Set("now", &shinemonitor.EnergyNowResponse{
-			TimeStamp: time.Now(),
-			Energy:    plant.OutputPower,
-			Unit:      "kW",
+			TimeStamp:  time.Now(),
+			Energy:     plant.OutputPower,
+			Unit:       "kW",
+			DeviceData: deviceData,
 		}, ttl)
 
 		cache.Set("summary", &shinemonitor.EnergySummaryResponse{
@@ -96,9 +97,10 @@ func doPoll(cfg *config.Config, sm *shinemonitor.Client, mq *mqtt.Client) {
 			mq.PublishState(mqtt.GlobalStatus{
 				Status: &shinemonitor.StatusResponse{Status: statusStr},
 				EnergyNow: &shinemonitor.EnergyNowResponse{
-					TimeStamp: time.Now(),
-					Energy:    plant.OutputPower,
-					Unit:      "kW",
+					TimeStamp:  time.Now(),
+					Energy:     plant.OutputPower,
+					Unit:       "kW",
+					DeviceData: deviceData,
 				},
 				Summary: &shinemonitor.EnergySummaryResponse{
 					Today: plant.Energy,

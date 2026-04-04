@@ -28,3 +28,4 @@ logs/
 # Temporary folders
 tmp/
 temp/
+tmp_build
