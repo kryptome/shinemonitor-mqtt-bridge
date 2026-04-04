@@ -7,7 +7,7 @@
 
 A simple Go bridge that pulls real-time solar data from ShineMonitor and publishes it to MQTT (with full Home Assistant auto-discovery) while also exposing a lightweight REST API.
 
-I built this because I wanted a fast, single-binary solution that works great on a Raspberry Pi and doesn’t need any external services.
+I built this because I wanted a fast, single-binary solution that works great on a Raspberry Pi and doesn't need any external services.
 
 ## Features
 
@@ -35,6 +35,91 @@ cp .env.example .env
 # Edit .env with your ShineMonitor login + MQTT details
 go run main.go
 ```
+
+## Installation
+
+### Option 1: One-command Install (Linux / Raspberry Pi)
+
+The easiest way. This builds the binary, installs it as a system service, and starts it automatically:
+
+```bash
+git clone https://github.com/kryptome/shinemonitor-mqtt-bridge.git
+cd shinemonitor-mqtt-bridge
+cp .env.example .env
+# Edit .env with your credentials
+bash install.sh
+```
+
+That's it — the bridge will start immediately and auto-restart on boot.
+
+### Option 2: Pre-compiled Binaries
+
+Pre-compiled binaries for Linux (amd64, arm64) and macOS will be available on the [GitHub Releases](https://github.com/kryptome/shinemonitor-mqtt-bridge/releases) page. Just download, extract, and run.
+
+### Option 3: Build from Source
+
+If you have Go installed:
+
+```bash
+git clone https://github.com/kryptome/shinemonitor-mqtt-bridge.git
+cd shinemonitor-mqtt-bridge
+go build -o shinemonitor-mqtt-bridge main.go
+./shinemonitor-mqtt-bridge
+```
+
+## Running as a Service (Recommended)
+
+For a real setup (especially on a Raspberry Pi), you want the bridge to start on boot and restart if it crashes.
+
+A ready-to-use systemd service file is included: `shinemonitor-mqtt-bridge.service`
+
+### Manual systemd setup
+
+```bash
+# Build the binary
+go build -o shinemonitor-mqtt-bridge main.go
+
+# Copy binary + config to /opt
+sudo mkdir -p /opt/shinemonitor-mqtt-bridge
+sudo cp shinemonitor-mqtt-bridge /opt/shinemonitor-mqtt-bridge/
+sudo cp .env /opt/shinemonitor-mqtt-bridge/
+
+# Install the service
+sudo cp shinemonitor-mqtt-bridge.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now shinemonitor-mqtt-bridge
+```
+
+### Useful commands
+
+```bash
+sudo systemctl status shinemonitor-mqtt-bridge   # Check status
+sudo journalctl -u shinemonitor-mqtt-bridge -f    # Follow logs
+sudo systemctl restart shinemonitor-mqtt-bridge   # Restart
+```
+
+> **Note:** The service file assumes the user `pi` and install path `/opt/shinemonitor-mqtt-bridge`. Edit the `.service` file if your setup is different.
+
+## Docker
+
+If you prefer Docker, a `Dockerfile` and `docker-compose.yml` are included.
+
+### Using Docker Compose (recommended)
+
+```bash
+cp .env.example .env
+# Edit .env with your credentials
+docker compose up -d
+```
+
+### Using Docker directly
+
+```bash
+docker build -t shinemonitor-mqtt-bridge .
+docker run -d --name shinemonitor-bridge --env-file .env -p 8080:8080 shinemonitor-mqtt-bridge
+```
+
+> **Tip:** If your MQTT broker runs on the host machine, uncomment the `extra_hosts` section in `docker-compose.yml` and use `host.docker.internal` as the broker address.
 
 ## Configuration
 
@@ -102,15 +187,16 @@ The bridge pulls data from both the dashboard and detailed query endpoints to ex
   - Grid R, S, T Voltage and Current
   - Grid Line Voltages (RS, ST, TR)
 - **AC Metrics**: Output Power, Output S (VA), Output Q (VAr), Output PF, Grid Frequency, Bus Voltage
-- **Inverter Diagnostics**: Inverter Status, Waiting Time, ISO, DCI, GFCI
+- **Inverter Diagnostics**: Waiting Time, ISO, DCI, GFCI
 
 ## Project Status
 
-- [ ] Shinemonitor login + data fetching
-- [ ] MQTT publishing with HA discovery
-- [ ] REST API
-- [ ] Docker support
+- [x] Shinemonitor login + data fetching
+- [x] MQTT publishing with HA discovery
+- [x] REST API
+- [x] Docker support
 - [ ] Tests
+- [ ] GitHub Release binaries
 
 ## Contributing
 

@@ -122,5 +122,25 @@ func (c *Client) GetDeviceDataOneDayPaging() (map[string]string, error) {
 		}
 	}
 
+	// Clean up fields based on MPPT and Phase count
+	if c.Config.MPPTCount < 3 {
+		delete(parsed, "PV3 voltage")
+		delete(parsed, "PV3 current")
+	}
+	if c.Config.MPPTCount < 2 {
+		delete(parsed, "PV2 voltage")
+		delete(parsed, "PV2 current")
+	}
+
+	if c.Config.PhaseCount < 3 {
+		delete(parsed, "Grid S voltage")
+		delete(parsed, "Grid S current")
+		delete(parsed, "Grid T voltage")
+		delete(parsed, "Grid T current")
+		delete(parsed, "Grid line voltage RS")
+		delete(parsed, "Grid line voltage ST")
+		delete(parsed, "Grid line voltage TR")
+	}
+
 	return parsed, nil
 }

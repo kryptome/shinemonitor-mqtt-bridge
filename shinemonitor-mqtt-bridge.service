@@ -1,0 +1,29 @@
+# shinemonitor-mqtt-bridge systemd service
+# Copy this file to /etc/systemd/system/ and enable it:
+#   sudo cp shinemonitor-mqtt-bridge.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now shinemonitor-mqtt-bridge
+
+[Unit]
+Description=ShineMonitor MQTT Bridge
+Documentation=https://github.com/kryptome/shinemonitor-mqtt-bridge
+After=network-online.target mosquitto.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/opt/shinemonitor-mqtt-bridge
+ExecStart=/opt/shinemonitor-mqtt-bridge/shinemonitor-mqtt-bridge
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Hardening (optional but recommended)
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/opt/shinemonitor-mqtt-bridge
+
+[Install]
+WantedBy=multi-user.target
