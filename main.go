@@ -1,0 +1,103 @@
+package main
+
+import (
+	"log"
+	"net/http"
+	"time"
+
+	"github.com/kryptome/shinemonitor-mqtt-bridge/internal/api"
+	"github.com/kryptome/shinemonitor-mqtt-bridge/internal/cache"
+	"github.com/kryptome/shinemonitor-mqtt-bridge/internal/config"
+	"github.com/kryptome/shinemonitor-mqtt-bridge/internal/mqtt"
+	"github.com/kryptome/shinemonitor-mqtt-bridge/internal/shinemonitor"
+)
+
+func main() {
+	cfg := config.LoadConfig()
+
+	log.Printf("Starting ShineMonitor Bridge (Poll Interval: %v)\n", cfg.PollInterval)
+
+	smClient := shinemonitor.NewClient(cfg)
+	
+	var mqClient *mqtt.Client
+	if cfg.MQTTBroker != "" {
+		c, err := mqtt.Connect(cfg)
+		if err != nil {
+			log.Fatalf("FAILED TO CONNECT TO MQTT: %v", err)
+		}
+		mqClient = c
+		mqClient.PublishDiscovery()
+	}
+
+	// Background Poller Goroutine
+	go func() {
+		ticker := time.NewTicker(cfg.PollInterval)
+		defer ticker.Stop()
+		
+		doPoll(cfg, smClient, mqClient)
+
+		for range ticker.C {
+			doPoll(cfg, smClient, mqClient)
+		}
+	}()
+
+	server := api.NewServer(smClient)
+	listenAddr := ":" + cfg.Port
+	log.Printf("Listening REST API on %s\n", listenAddr)
+	if err := http.ListenAndServe(listenAddr, server.Routes()); err != nil {
+		log.Fatalf("HTTP Listener Failed: %v\n", err)
+	}
+}
+
+func doPoll(cfg *config.Config, sm *shinemonitor.Client, mq *mqtt.Client) {
+	// Execute a single optimized `webQueryPlants` call
+	plant, err := sm.GetWebQueryPlants()
+	ttl := cfg.PollInterval + 5*time.Second
+
+	if err == nil {
+		// Populate all caches individually so existing routes resolve natively
+		statusStr := "Offline"
+		if plant.Status == 0 {
+			statusStr = "Online"
+		}
+		cache.Set("status", &shinemonitor.StatusResponse{Status: statusStr}, ttl)
+
+		cache.Set("now", &shinemonitor.EnergyNowResponse{
+			TimeStamp: time.Now(),
+			Energy:    plant.OutputPower,
+			Unit:      "kW",
+		}, ttl)
+
+		cache.Set("summary", &shinemonitor.EnergySummaryResponse{
+			Today: plant.Energy,
+			Month: plant.EnergyMonth,
+			Year:  plant.EnergyYear,
+			Total: plant.EnergyTotal,
+			Unit:  "kWh",
+		}, ttl)
+
+		cache.Set("dashboard", plant, ttl)
+
+		if mq != nil {
+			log.Println("Polled ShineMonitor (optimized webQuery), pushing to MQTT...")
+			mq.PublishState(mqtt.GlobalStatus{
+				Status: &shinemonitor.StatusResponse{Status: statusStr},
+				EnergyNow: &shinemonitor.EnergyNowResponse{
+					TimeStamp: time.Now(),
+					Energy:    plant.OutputPower,
+					Unit:      "kW",
+				},
+				Summary: &shinemonitor.EnergySummaryResponse{
+					Today: plant.Energy,
+					Month: plant.EnergyMonth,
+					Year:  plant.EnergyYear,
+					Total: plant.EnergyTotal,
+					Unit:  "kWh",
+				},
+				Dashboard: plant,
+			})
+		}
+	} else {
+		log.Printf("Poll resulted in incomplete fetching: err=%v", err)
+	}
+}

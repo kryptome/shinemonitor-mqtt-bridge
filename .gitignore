@@ -1,0 +1,30 @@
+# Build outputs
+bin/
+dist/
+
+#tmp token
+token
+
+# Go files
+*.test
+*.out
+coverage.txt
+go.work
+
+# Secrets
+.env
+
+# Logs
+*.log
+logs/
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Temporary folders
+tmp/
+temp/
