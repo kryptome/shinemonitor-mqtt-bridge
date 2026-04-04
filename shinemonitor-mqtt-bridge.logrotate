@@ -1,0 +1,12 @@
+# Logrotate config for ShineMonitor MQTT Bridge
+# Install: sudo cp shinemonitor-mqtt-bridge.logrotate /etc/logrotate.d/shinemonitor-mqtt-bridge
+
+/var/log/shinemonitor-mqtt-bridge.log {
+    daily
+    rotate 7
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+}

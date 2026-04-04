@@ -12,18 +12,12 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-User=pi
 WorkingDirectory=/opt/shinemonitor-mqtt-bridge
 ExecStart=/opt/shinemonitor-mqtt-bridge/shinemonitor-mqtt-bridge
 Restart=always
 RestartSec=10
-StandardOutput=journal
-StandardError=journal
-
-# Hardening (optional but recommended)
-NoNewPrivileges=true
-ProtectSystem=strict
-ReadWritePaths=/opt/shinemonitor-mqtt-bridge
+StandardOutput=append:/var/log/shinemonitor-mqtt-bridge.log
+StandardError=append:/var/log/shinemonitor-mqtt-bridge.log
 
 [Install]
 WantedBy=multi-user.target

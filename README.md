@@ -84,21 +84,26 @@ sudo mkdir -p /opt/shinemonitor-mqtt-bridge
 sudo cp shinemonitor-mqtt-bridge /opt/shinemonitor-mqtt-bridge/
 sudo cp .env /opt/shinemonitor-mqtt-bridge/
 
-# Install the service
+# Install the service + logrotate
 sudo cp shinemonitor-mqtt-bridge.service /etc/systemd/system/
+sudo cp shinemonitor-mqtt-bridge.logrotate /etc/logrotate.d/shinemonitor-mqtt-bridge
 sudo systemctl daemon-reload
 sudo systemctl enable --now shinemonitor-mqtt-bridge
 ```
 
+### Logs
+
+Logs are written to `/var/log/shinemonitor-mqtt-bridge.log` and are **automatically rotated daily** (7 days retained, compressed). No manual cleanup needed.
+
 ### Useful commands
 
 ```bash
-sudo systemctl status shinemonitor-mqtt-bridge   # Check status
-sudo journalctl -u shinemonitor-mqtt-bridge -f    # Follow logs
-sudo systemctl restart shinemonitor-mqtt-bridge   # Restart
+sudo systemctl status shinemonitor-mqtt-bridge    # Check status
+tail -f /var/log/shinemonitor-mqtt-bridge.log      # Follow logs
+sudo systemctl restart shinemonitor-mqtt-bridge    # Restart
 ```
 
-> **Note:** The service file assumes the user `pi` and install path `/opt/shinemonitor-mqtt-bridge`. Edit the `.service` file if your setup is different.
+> **Note:** The service file assumes install path `/opt/shinemonitor-mqtt-bridge`. Edit the `.service` file if your setup is different.
 
 ## Docker
 
