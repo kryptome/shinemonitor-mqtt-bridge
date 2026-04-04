@@ -183,14 +183,27 @@ Once the bridge is running, you can explore the interactive API references via S
 Just enable the MQTT integration in Home Assistant. All sensors will appear automatically.
 
 ### Exposed Sensors
-The bridge publishes only clean, meaningful sensors by default:
-- **Status**: Online / Offline
-- **Power**: Current Power (kW), Power Efficiency (%)
-- **Energy**: Energy Today (kWh), Energy Total (kWh)
-- **AC Metrics**: Output S — Apparent Power (VA), Output PF (Power Factor), Grid Frequency (Hz), Bus Voltage (V)
-- **PV Strings**: PV1 Voltage (V), PV1 Current (A) — PV2/PV3 added via `MPPT_COUNT`
-- **Grid**: Grid R Voltage (V), Grid R Current (A) — Grid S/T added via `PHASE_COUNT`
-- **Performance**: CUF (%), PR (%)
+All entities use the clean `solar_` prefix. The device appears as **Solar Inverter** in Home Assistant.
+
+| Entity ID | Friendly Name | Unit |
+|---|---|---|
+| `solar_status` | Solar Status | — |
+| `solar_current_power` | Solar Current Power | kW |
+| `solar_energy_today` | Solar Energy Today | kWh |
+| `solar_energy_total` | Solar Energy Total | kWh |
+| `solar_power_efficiency` | Solar Power Efficiency | % |
+| `solar_output_s` | Output S (Apparent Power) | VA |
+| `solar_output_pf` | Output Power Factor | — |
+| `solar_pv1_voltage` | PV1 Voltage | V |
+| `solar_pv1_current` | PV1 Current | A |
+| `solar_grid_r_voltage` | Grid R Voltage | V |
+| `solar_grid_r_current` | Grid R Current | A |
+| `solar_grid_frequency` | Grid Frequency | Hz |
+| `solar_bus_voltage` | Bus Voltage | V |
+| `solar_cuf` | CUF | % |
+| `solar_pr` | PR | % |
+
+Additional sensors added via config: PV2/PV3 (`MPPT_COUNT`), Grid S/T + Line Voltages (`PHASE_COUNT`).
 
 ## Project Status
 
