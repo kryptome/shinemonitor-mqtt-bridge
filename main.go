@@ -10,7 +10,14 @@ import (
 	"github.com/kryptome/shinemonitor-mqtt-bridge/internal/config"
 	"github.com/kryptome/shinemonitor-mqtt-bridge/internal/mqtt"
 	"github.com/kryptome/shinemonitor-mqtt-bridge/internal/shinemonitor"
+
+	_ "github.com/kryptome/shinemonitor-mqtt-bridge/docs"
 )
+
+// @title ShineMonitor MQTT Bridge API
+// @version 1.0
+// @description Bridge service exposing ShineMonitor solar metrics seamlessly via standard REST endpoints and pushing to MQTT.
+// @contact.name Piyush Mishra
 
 func main() {
 	cfg := config.LoadConfig()
@@ -52,6 +59,12 @@ func main() {
 func doPoll(cfg *config.Config, sm *shinemonitor.Client, mq *mqtt.Client) {
 	// Execute a single optimized `webQueryPlants` call
 	plant, err := sm.GetWebQueryPlants()
+	deviceData, devErr := sm.GetDeviceDataOneDayPaging()
+	
+	if devErr != nil {
+		log.Printf("Warning: Failed to fetch device data: %v", devErr)
+	}
+
 	ttl := cfg.PollInterval + 5*time.Second
 
 	if err == nil {
@@ -94,7 +107,8 @@ func doPoll(cfg *config.Config, sm *shinemonitor.Client, mq *mqtt.Client) {
 					Total: plant.EnergyTotal,
 					Unit:  "kWh",
 				},
-				Dashboard: plant,
+				Dashboard:  plant,
+				DeviceData: deviceData,
 			})
 		}
 	} else {

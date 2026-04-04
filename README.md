@@ -65,6 +65,21 @@ All configuration is done through the `.env` file.
 - `POLL_INTERVAL` – how often to fetch data (e.g. `30s`, `1m`, `5m`)
 - `LOG_LEVEL` – logging level (`debug`, `info`, `warn`, `error`)
 
+## API Endpoints
+
+The bridge exposes a lightweight REST API for querying real-time and historical data cleanly without hitting ShineMonitor directly for every query.
+Once the bridge is running, you can explore the interactive API references via Swagger UI locally at: `http://localhost:8080/swagger/index.html`
+
+- **`GET /status`** – Fetch online/offline status.
+  - *Response:* `{"Status": "Online"}`
+- **`GET /now`** – Get immediate live power generation.
+  - *Response:* `{"TimeStamp": "2026-04-04T12:00:00Z", "Energy": "4.5", "Unit": "kW"}`
+- **`GET /summary`** – Get summarized energy metrics (Today, Month, Year, Total).
+  - *Response:* `{"Today": "12.3", "Month": "120.4", "Year": "1005.1", "Total": "3000", "Unit": "kWh"}`
+- **`GET /dashboard`** – Advanced live diagnostics (Includes Efficiency, CF Value, output power).
+- **`GET /timeline?date=2026-04-04`** – Array of intra-day charts recording historic production.
+- **`GET /plant`** – Fetch deep configuration meta like install date and locations.
+
 ## Home Assistant Integration
 
 Just enable the MQTT integration in Home Assistant. All sensors (PV power, battery SOC, grid export, etc.) will appear automatically.

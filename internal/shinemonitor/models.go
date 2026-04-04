@@ -42,23 +42,29 @@ type PlantAddress struct {
 }
 
 type PlantProfit struct {
-	TotalProfit      string `json:"totalProfit"`
+	TotalProfit      string `json:"totalProfit,omitempty"`
 	TotalProfitValue string `json:"totalProfitValue,omitempty"`
+	UnitProfit       string `json:"unitProfit,omitempty"`
+	Currency         string `json:"currency,omitempty"`
 }
 
 type WebQueryPlant struct {
-	PID             int     `json:"pid"`
-	Name            string  `json:"name"`
-	Status          int     `json:"status"`
-	OutputPower     string  `json:"outputPower"`
-	Energy          string  `json:"energy"`
-	EnergyMonth     string  `json:"energyMonth"`
-	EnergyYear      string  `json:"energyYear"`
-	EnergyTotal     string  `json:"energyTotal"`
-	PowerEfficiency string  `json:"powerEfficiency"`
-	CFValue         string  `json:"cfValue"`
-	NominalPower    string  `json:"nominalPower"`
-	LTS             string  `json:"lts,omitempty"`
+	PID             int          `json:"pid"`
+	Name            string       `json:"name"`
+	Status          int          `json:"status"`
+	OutputPower     string       `json:"outputPower"`
+	Energy          string       `json:"energy"`
+	EnergyMonth     string       `json:"energyMonth"`
+	EnergyYear      string       `json:"energyYear"`
+	EnergyTotal     string       `json:"energyTotal"`
+	PowerEfficiency string       `json:"powerEfficiency"`
+	CFValue         string       `json:"cfValue"`
+	NominalPower    string       `json:"nominalPower"`
+	LTS             string       `json:"lts,omitempty"`
+	Install         string       `json:"install"`
+	GTS             string       `json:"gts"`
+	Address         PlantAddress `json:"address"`
+	Profit          PlantProfit  `json:"profit"`
 }
 
 type WebQueryPlantsResponse struct {
@@ -77,4 +83,27 @@ type ChartDetailResponse struct {
 	} `json:"dat"`
 	Err  int    `json:"err"`
 	Desc string `json:"desc"`
+}
+
+type DeviceDataTitle struct {
+	Title     string `json:"title"`
+	Unit      string `json:"unit,omitempty"`
+	IsDisplay int    `json:"isDisplay"`
+}
+
+type DeviceDataRow struct {
+	Realtime bool     `json:"realtime"`
+	Field    []string `json:"field"`
+}
+
+type DeviceDataOneDayPagingResponse struct {
+	Err  int    `json:"err"`
+	Desc string `json:"desc"`
+	Dat  struct {
+		Total    int               `json:"total"`
+		Page     int               `json:"page"`
+		Pagesize int               `json:"pagesize"`
+		Title    []DeviceDataTitle `json:"title"`
+		Row      []DeviceDataRow   `json:"row"`
+	} `json:"dat"`
 }

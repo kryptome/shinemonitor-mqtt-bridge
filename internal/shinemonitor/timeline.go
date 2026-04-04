@@ -62,11 +62,12 @@ func (c *Client) getTimelineData(action string, fieldName string, unit string) (
 
 // GetDeviceChart uses the exact chart query from user requested override for precise 'day' granularity
 func (c *Client) GetDeviceChart(date string) ([]EnergyTimelineResponse, error) {
-	sdate := fmt.Sprintf("%s 00:00:00", date)
-	edate := fmt.Sprintf("%s 23:59:59", date)
+	sdate := fmt.Sprintf("%s%%2000:00:00", date)
+	edate := fmt.Sprintf("%s%%2023:59:59", date)
 
 	action := fmt.Sprintf("&action=queryDeviceChartFieldDetailData&devaddr=1&pn=%s&devcode=%s&sn=%s&field=output_power&precision=5&sdate=%s&edate=%s",
 		c.Config.PN, c.Config.DevCode, c.Config.SN, sdate, edate)
+
 
 	data, err := c.MakeRequest(action)
 	if err != nil {

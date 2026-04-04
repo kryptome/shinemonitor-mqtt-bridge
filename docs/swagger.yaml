@@ -1,0 +1,193 @@
+definitions:
+  shinemonitor.EnergyNowResponse:
+    properties:
+      Energy:
+        type: string
+      Error:
+        type: string
+      TimeStamp:
+        type: string
+      Unit:
+        type: string
+    type: object
+  shinemonitor.EnergySummaryResponse:
+    properties:
+      Error:
+        type: string
+      Month:
+        type: string
+      Today:
+        type: string
+      Total:
+        type: string
+      Unit:
+        type: string
+      Year:
+        type: string
+    type: object
+  shinemonitor.EnergyTimelineResponse:
+    properties:
+      TimeStamp:
+        type: string
+      Unit:
+        type: string
+      Value:
+        type: string
+    type: object
+  shinemonitor.PlantAddress:
+    properties:
+      city:
+        type: string
+      country:
+        type: string
+    type: object
+  shinemonitor.PlantInfoResponse:
+    properties:
+      address:
+        $ref: '#/definitions/shinemonitor.PlantAddress'
+      gridConnectionDate:
+        type: string
+      installDate:
+        type: string
+      profit:
+        $ref: '#/definitions/shinemonitor.PlantProfit'
+    type: object
+  shinemonitor.PlantProfit:
+    properties:
+      totalProfit:
+        type: string
+      totalProfitValue:
+        type: string
+    type: object
+  shinemonitor.StatusResponse:
+    properties:
+      Error:
+        type: string
+      Status:
+        type: string
+    type: object
+  shinemonitor.WebQueryPlant:
+    properties:
+      cfValue:
+        type: string
+      energy:
+        type: string
+      energyMonth:
+        type: string
+      energyTotal:
+        type: string
+      energyYear:
+        type: string
+      lts:
+        type: string
+      name:
+        type: string
+      nominalPower:
+        type: string
+      outputPower:
+        type: string
+      pid:
+        type: integer
+      powerEfficiency:
+        type: string
+      status:
+        type: integer
+    type: object
+info:
+  contact:
+    name: Piyush Mishra
+  description: Bridge service exposing ShineMonitor solar metrics seamlessly via standard
+    REST endpoints and pushing to MQTT.
+  title: ShineMonitor MQTT Bridge API
+  version: "1.0"
+paths:
+  /dashboard:
+    get:
+      description: Provides full metadata and raw readings about the plant including
+        efficiency and cfValue
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/shinemonitor.WebQueryPlant'
+      summary: Get detailed dashboard
+      tags:
+      - Live Data
+  /now:
+    get:
+      description: Gets the immediate live power output of the plant
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/shinemonitor.EnergyNowResponse'
+      summary: Get current power
+      tags:
+      - Live Data
+  /plant:
+    get:
+      description: Grabs static configuration, address and nominal metrics for the
+        plant
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/shinemonitor.PlantInfoResponse'
+      summary: Get plant details
+      tags:
+      - Meta
+  /status:
+    get:
+      description: Fetches the current online/offline status of the inverter
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/shinemonitor.StatusResponse'
+      summary: Get device status
+      tags:
+      - Live Data
+  /summary:
+    get:
+      description: Gets the today, month, year, and total energy production
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/shinemonitor.EnergySummaryResponse'
+      summary: Get energy summary
+      tags:
+      - Live Data
+  /timeline:
+    get:
+      description: Fetches historical energy production charts for day, month, year,
+        or total metrics
+      parameters:
+      - description: Date for historical records depending on timeframe (YYYY-MM-DD,
+          YYYY-MM, or YYYY)
+        in: query
+        name: date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/shinemonitor.EnergyTimelineResponse'
+            type: array
+      summary: Get energy timeline
+      tags:
+      - Historical
+swagger: "2.0"

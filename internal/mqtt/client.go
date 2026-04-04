@@ -50,6 +50,7 @@ func Connect(cfg *config.Config) (*Client, error) {
 
 type HADiscoveryPayload struct {
 	DeviceClass       string `json:"device_class,omitempty"`
+	StateClass        string `json:"state_class,omitempty"`
 	Name              string `json:"name"`
 	StateTopic        string `json:"state_topic"`
 	UnitOfMeasurement string `json:"unit_of_measurement,omitempty"`
@@ -67,12 +68,45 @@ func (m *Client) PublishDiscovery() {
 	stateTopic := fmt.Sprintf("%s/state", m.cfg.MQTTClientID)
 
 	sensors := []map[string]string{
-		{"id": "status", "name": "Status", "class": "", "unit": "", "val": "{{ value_json.status.Status }}"},
-		{"id": "energy_now", "name": "Current Power", "class": "power", "unit": "kW", "val": "{{ value_json.energy_now.Energy }}"},
-		{"id": "energy_today", "name": "Energy Today", "class": "energy", "unit": "kWh", "val": "{{ value_json.summary.Today }}"},
-		{"id": "energy_total", "name": "Energy Total", "class": "energy", "unit": "kWh", "val": "{{ value_json.summary.Total }}"},
-		{"id": "efficiency", "name": "Power Efficiency", "class": "", "unit": "%", "val": "{{ value_json.dashboard.powerEfficiency }}"},
-		{"id": "cf_value", "name": "CF Value", "class": "", "unit": "", "val": "{{ value_json.dashboard.cfValue }}"},
+		{"id": "status", "name": "Status", "class": "", "stateClass": "", "unit": "", "val": "{{ value_json.status.Status }}"},
+		{"id": "energy_now", "name": "Current Power", "class": "power", "stateClass": "measurement", "unit": "kW", "val": "{{ value_json.energy_now.Energy }}"},
+		{"id": "energy_today", "name": "Energy Today", "class": "energy", "stateClass": "total_increasing", "unit": "kWh", "val": "{{ value_json.summary.Today }}"},
+		{"id": "energy_total", "name": "Energy Total", "class": "energy", "stateClass": "total_increasing", "unit": "kWh", "val": "{{ value_json.summary.Total }}"},
+		{"id": "efficiency", "name": "Power Efficiency", "class": "", "stateClass": "measurement", "unit": "%", "val": "{{ value_json.dashboard.powerEfficiency }}"},
+		{"id": "cf_value", "name": "CF Value", "class": "", "stateClass": "measurement", "unit": "", "val": "{{ value_json.dashboard.cfValue }}"},
+		// New DeviceData sensors
+		{"id": "dev_output_power", "name": "Output Power Raw", "class": "power", "stateClass": "measurement", "unit": "W", "val": "{{ value_json.device_data['Output Power'] }}"},
+		{"id": "dev_output_s", "name": "Output S", "class": "apparent_power", "stateClass": "measurement", "unit": "VA", "val": "{{ value_json.device_data['Output S'] }}"},
+		{"id": "dev_output_q", "name": "Output Q", "class": "reactive_power", "stateClass": "measurement", "unit": "VA", "val": "{{ value_json.device_data['Output Q'] }}"},
+		{"id": "dev_output_pf", "name": "Output PF", "class": "power_factor", "stateClass": "measurement", "unit": "", "val": "{{ value_json.device_data['Output PF'] }}"},
+		{"id": "dev_instrument_power", "name": "Instrument Power", "class": "power", "stateClass": "measurement", "unit": "W", "val": "{{ value_json.device_data['Instrument power'] }}"},
+		{"id": "dev_energy_today", "name": "Energy Today Raw", "class": "energy", "stateClass": "total_increasing", "unit": "kWh", "val": "{{ value_json.device_data['Energy today'] }}"},
+		{"id": "dev_energy_total", "name": "Energy Total Raw", "class": "energy", "stateClass": "total_increasing", "unit": "kWh", "val": "{{ value_json.device_data['energy_total'] }}"},
+		{"id": "dev_cumulative_time", "name": "Cumulative Time", "class": "duration", "stateClass": "total_increasing", "unit": "h", "val": "{{ value_json.device_data['cumulative time'] }}"},
+		{"id": "dev_inverter_status", "name": "Inverter Status Raw", "class": "", "stateClass": "", "unit": "", "val": "{{ value_json.device_data['Inverter status'] }}"},
+		{"id": "dev_waiting_time", "name": "Waiting Time", "class": "duration", "stateClass": "measurement", "unit": "s", "val": "{{ value_json.device_data['Waiting time'] }}"},
+		{"id": "dev_pv1_voltage", "name": "PV1 Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['PV1 voltage'] }}"},
+		{"id": "dev_pv1_current", "name": "PV1 Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['PV1 current'] }}"},
+		{"id": "dev_pv2_voltage", "name": "PV2 Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['PV2 voltage'] }}"},
+		{"id": "dev_pv2_current", "name": "PV2 Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['PV2 current'] }}"},
+		{"id": "dev_pv3_voltage", "name": "PV3 Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['PV3 voltage'] }}"},
+		{"id": "dev_pv3_current", "name": "PV3 Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['PV3 current'] }}"},
+		{"id": "dev_grid_r_voltage", "name": "Grid R Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid R voltage'] }}"},
+		{"id": "dev_grid_r_current", "name": "Grid R Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['Grid R current'] }}"},
+		{"id": "dev_grid_s_voltage", "name": "Grid S Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid S voltage'] }}"},
+		{"id": "dev_grid_s_current", "name": "Grid S Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['Grid S current'] }}"},
+		{"id": "dev_grid_t_voltage", "name": "Grid T Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid T voltage'] }}"},
+		{"id": "dev_grid_t_current", "name": "Grid T Current", "class": "current", "stateClass": "measurement", "unit": "A", "val": "{{ value_json.device_data['Grid T current'] }}"},
+		{"id": "dev_grid_rs_voltage", "name": "Grid Line Voltage RS", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid line voltage RS'] }}"},
+		{"id": "dev_grid_st_voltage", "name": "Grid Line Voltage ST", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid line voltage ST'] }}"},
+		{"id": "dev_grid_tr_voltage", "name": "Grid Line Voltage TR", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['Grid line voltage TR'] }}"},
+		{"id": "dev_grid_freq", "name": "Grid Frequency", "class": "frequency", "stateClass": "measurement", "unit": "Hz", "val": "{{ value_json.device_data['Grid frequency'] }}"},
+		{"id": "dev_bus_voltage", "name": "Bus Voltage", "class": "voltage", "stateClass": "measurement", "unit": "V", "val": "{{ value_json.device_data['bus voltage'] }}"},
+		{"id": "dev_iso", "name": "ISO", "class": "", "stateClass": "measurement", "unit": "", "val": "{{ value_json.device_data['ISO'] }}"},
+		{"id": "dev_dci", "name": "DCI", "class": "", "stateClass": "measurement", "unit": "", "val": "{{ value_json.device_data['DCI'] }}"},
+		{"id": "dev_gfci", "name": "GFCI", "class": "", "stateClass": "measurement", "unit": "", "val": "{{ value_json.device_data['GFCI'] }}"},
+		{"id": "dev_cuf", "name": "CUF", "class": "", "stateClass": "measurement", "unit": "%", "val": "{{ value_json.device_data['CUF'] }}"},
+		{"id": "dev_pr", "name": "PR", "class": "", "stateClass": "measurement", "unit": "%", "val": "{{ value_json.device_data['PR'] }}"},
 	}
 
 	for _, s := range sensors {
@@ -80,6 +114,7 @@ func (m *Client) PublishDiscovery() {
 
 		payload := HADiscoveryPayload{
 			DeviceClass:       s["class"],
+			StateClass:        s["stateClass"],
 			Name:              fmt.Sprintf("ShineMonitor %s", s["name"]),
 			StateTopic:        stateTopic,
 			UnitOfMeasurement: s["unit"],
@@ -92,7 +127,7 @@ func (m *Client) PublishDiscovery() {
 		payload.Device.Model = "Inverter"
 
 		payloadBytes, _ := json.Marshal(payload)
-		token := m.client.Publish(configTopic, 1, true, string(payloadBytes))
+		token := m.client.Publish(configTopic, 1, false, string(payloadBytes))
 		token.Wait()
 	}
 
@@ -100,10 +135,11 @@ func (m *Client) PublishDiscovery() {
 }
 
 type GlobalStatus struct {
-	Status    *shinemonitor.StatusResponse        `json:"status"`
-	EnergyNow *shinemonitor.EnergyNowResponse     `json:"energy_now"`
-	Summary   *shinemonitor.EnergySummaryResponse `json:"summary"`
-	Dashboard *shinemonitor.WebQueryPlant         `json:"dashboard"`
+	Status     *shinemonitor.StatusResponse        `json:"status"`
+	EnergyNow  *shinemonitor.EnergyNowResponse     `json:"energy_now"`
+	Summary    *shinemonitor.EnergySummaryResponse `json:"summary"`
+	Dashboard  *shinemonitor.WebQueryPlant         `json:"dashboard"`
+	DeviceData map[string]string                   `json:"device_data,omitempty"`
 }
 
 func (m *Client) PublishState(state GlobalStatus) {

@@ -1,33 +1,18 @@
 package shinemonitor
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 func (c *Client) GetPlantInfo() (*PlantInfoResponse, error) {
-	action := fmt.Sprintf("&action=queryPlantInfo&plantid=%s", c.Config.PlantID)
-	data, err := c.MakeRequest(action)
+	plant, err := c.GetWebQueryPlants()
 	if err != nil {
-		return &PlantInfoResponse{}, err
+		return nil, err
 	}
 
-	dat, ok := data["dat"].(map[string]interface{})
-	if !ok {
-		return &PlantInfoResponse{}, fmt.Errorf("missing dat key in plant info")
-	}
-
-	// Because dat is basically the shape of PlantInfoResponse, 
-	// we can re-marshal it and unmarshal into our struct nicely.
-	jsonBytes, err := json.Marshal(dat)
-	if err != nil {
-		return &PlantInfoResponse{}, err
-	}
-
-	var res PlantInfoResponse
-	if err := json.Unmarshal(jsonBytes, &res); err != nil {
-		return &PlantInfoResponse{}, err
-	}
-
-	return &res, nil
+	return &PlantInfoResponse{
+		InstallDate:        plant.Install,
+		GridConnectionDate: plant.GTS,
+		Address:            plant.Address,
+		Profit: PlantProfit{
+			TotalProfit: plant.Profit.UnitProfit, // Old API was empty, mapped to UnitProfit assuming closest metric available from dashboard
+			TotalProfitValue: plant.Profit.Currency,
+		},
+	}, nil
 }

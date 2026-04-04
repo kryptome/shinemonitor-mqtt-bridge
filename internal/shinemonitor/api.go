@@ -81,3 +81,46 @@ func (c *Client) GetEnergySummary() (*EnergySummaryResponse, error) {
 		Unit:  "kWh",
 	}, nil
 }
+
+// GetDeviceDataOneDayPaging gets detailed device data and parses it as a map
+func (c *Client) GetDeviceDataOneDayPaging() (map[string]string, error) {
+	dateStr := time.Now().Format("2006-01-02")
+	action := fmt.Sprintf("&action=queryDeviceDataOneDayPaging&devaddr=1&oddEvenRow=null&pn=%s&devcode=%s&sn=%s&date=%s&page=0&pagesize=50",
+		c.Config.PN, c.Config.DevCode, c.Config.SN, dateStr)
+
+	data, err := c.MakeRequest(action)
+	if err != nil {
+		return nil, err
+	}
+
+	jsonStr, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	var res DeviceDataOneDayPagingResponse
+	if err := json.Unmarshal(jsonStr, &res); err != nil {
+		return nil, err
+	}
+
+	if res.Err != 0 {
+		return nil, fmt.Errorf("queryDeviceDataOneDayPaging API Error: %d - %s", res.Err, res.Desc)
+	}
+
+	if len(res.Dat.Row) == 0 {
+		return nil, fmt.Errorf("no device data rows returned")
+	}
+
+	// We take the first row which has our latest realtime data
+	latestRow := res.Dat.Row[0]
+	parsed := make(map[string]string)
+
+	// Map each field to its title
+	for i, titleRaw := range res.Dat.Title {
+		if i < len(latestRow.Field) {
+			parsed[titleRaw.Title] = latestRow.Field[i]
+		}
+	}
+
+	return parsed, nil
+}
