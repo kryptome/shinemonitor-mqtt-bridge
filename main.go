@@ -34,6 +34,16 @@ func main() {
 		}
 		mqClient = c
 		mqClient.PublishDiscovery()
+
+		// Background Discovery Refresh Goroutine (every 6 hours)
+		go func() {
+			discoveryTicker := time.NewTicker(6 * time.Hour)
+			defer discoveryTicker.Stop()
+			for range discoveryTicker.C {
+				log.Println("Discovery refresh triggered (6h interval)")
+				mqClient.PublishDiscovery()
+			}
+		}()
 	}
 
 	// Background Poller Goroutine
