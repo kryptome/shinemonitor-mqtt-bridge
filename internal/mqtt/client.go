@@ -143,7 +143,7 @@ func (m *Client) PublishDiscovery() {
 		payload.Device.ConfigurationURL = "http://localhost:8080/swagger/index.html"
 
 		payloadBytes, _ := json.Marshal(payload)
-		token := m.client.Publish(configTopic, 1, false, string(payloadBytes))
+		token := m.client.Publish(configTopic, 1, true, string(payloadBytes))
 		token.Wait()
 	}
 

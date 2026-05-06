@@ -14,10 +14,17 @@ import (
 	_ "github.com/kryptome/shinemonitor-mqtt-bridge/docs"
 )
 
-// @title ShineMonitor MQTT Bridge API
-// @version 1.0
-// @description Bridge service exposing ShineMonitor solar metrics seamlessly via standard REST endpoints and pushing to MQTT.
 // @contact.name Piyush Mishra
+
+type InverterState int
+
+const (
+	StateUnknown InverterState = iota
+	StateOnline
+	StateOffline
+)
+
+var currentInverterState = StateUnknown
 
 func main() {
 	cfg := config.LoadConfig()
@@ -57,8 +64,8 @@ func main() {
 			doPoll(cfg, smClient, mqClient)
 		}
 	}()
-
-	server := api.NewServer(smClient)
+	
+	server := api.NewServer(smClient, mqClient)
 	listenAddr := ":" + cfg.Port
 	log.Printf("Listening REST API on %s\n", listenAddr)
 	if err := http.ListenAndServe(listenAddr, server.Routes()); err != nil {
@@ -82,7 +89,17 @@ func doPoll(cfg *config.Config, sm *shinemonitor.Client, mq *mqtt.Client) {
 		statusStr := "Offline"
 		if plant.Status == 0 {
 			statusStr = "Online"
+			if currentInverterState != StateOnline {
+				log.Println("Inverter came Online, re-publishing discovery...")
+				if mq != nil {
+					mq.PublishDiscovery()
+				}
+				currentInverterState = StateOnline
+			}
+		} else {
+			currentInverterState = StateOffline
 		}
+
 		cache.Set("status", &shinemonitor.StatusResponse{Status: statusStr}, ttl)
 
 		cache.Set("now", &shinemonitor.EnergyNowResponse{
@@ -125,5 +142,6 @@ func doPoll(cfg *config.Config, sm *shinemonitor.Client, mq *mqtt.Client) {
 		}
 	} else {
 		log.Printf("Poll resulted in incomplete fetching: err=%v", err)
+		currentInverterState = StateOffline
 	}
 }

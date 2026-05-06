@@ -7,16 +7,21 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/kryptome/shinemonitor-mqtt-bridge/internal/cache"
+	"github.com/kryptome/shinemonitor-mqtt-bridge/internal/mqtt"
 	"github.com/kryptome/shinemonitor-mqtt-bridge/internal/shinemonitor"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 type Server struct {
 	client *shinemonitor.Client
+	mq     *mqtt.Client
 }
 
-func NewServer(client *shinemonitor.Client) *Server {
-	return &Server{client: client}
+func NewServer(client *shinemonitor.Client, mq *mqtt.Client) *Server {
+	return &Server{
+		client: client,
+		mq:     mq,
+	}
 }
 
 func (s *Server) Routes() chi.Router {
@@ -33,6 +38,8 @@ func (s *Server) Routes() chi.Router {
 	r.Get("/timeline/total", s.handleTimeline("total"))
 	
 	r.Get("/plant", s.handlePlant)
+
+	r.Post("/forceDiscovery", s.handleForceDiscovery)
 
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
 
@@ -222,4 +229,20 @@ func (s *Server) handlePlant(w http.ResponseWriter, r *http.Request) {
 
 	cache.Set(cacheKey, res, 3600*time.Second)
 	writeJSON(w, res)
+}
+
+// @Summary Force resend Home Assistant discovery
+// @Description Manually triggers the re-publishing of MQTT discovery payloads for Home Assistant
+// @Tags System
+// @Success 200 {object} map[string]string
+// @Router /forceDiscovery [post]
+func (s *Server) handleForceDiscovery(w http.ResponseWriter, r *http.Request) {
+	if s.mq == nil {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		writeJSON(w, map[string]string{"Error": "MQTT client not initialized"})
+		return
+	}
+
+	s.mq.PublishDiscovery()
+	writeJSON(w, map[string]string{"status": "Discovery payloads sent"})
 }
